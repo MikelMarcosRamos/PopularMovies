@@ -6,20 +6,18 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.popularmovies.data.TheMovieDbPreferencias;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.example.android.popularmovies.utilities.PeliculasJsonUtils;
-import com.squareup.picasso.Picasso;
+
 
 import java.net.URL;
 
@@ -45,7 +43,9 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         this.mMostrarError = (TextView) this.findViewById(R.id.tv_mostrar_error);
         this.mCargando = (ProgressBar) this.findViewById(R.id.pb_cargando);
 
-        this.mRvPeliculas.setLayoutManager(new GridLayoutManager(this, 2));
+        Context context = this;
+
+        this.mRvPeliculas.setLayoutManager(new GridLayoutManager(context, 2));
         this.mRvPeliculas.setHasFixedSize(true);
         this.mTheMovieDbAdapter = new TheMovieDbAdapter(this);
         this.mRvPeliculas.setAdapter(this.mTheMovieDbAdapter);
@@ -59,10 +59,14 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
      * background method to get the weather data in the background.
      */
     private void cargarDatosPeliculas() {
+        Integer tipoLista = TheMovieDbPreferencias.obtenerListaPorDefecto();
+        cargarDatosPeliculas(tipoLista);
+    }
+
+    private void cargarDatosPeliculas(Integer tipoLista) {
         mostrarDatosPeliculas();
 
-        String location = TheMovieDbPreferencias.getPreferredWeatherLocation(this);
-        new CargarPeliculasTarea().execute(location);
+        new CargarPeliculasTarea().execute(tipoLista);
     }
 
     /**
@@ -109,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         this.mMostrarError.setVisibility(View.VISIBLE);
     }
 
-    public class CargarPeliculasTarea extends AsyncTask<String, Void, String[]> {
+    public class CargarPeliculasTarea extends AsyncTask<Integer, Void, String[]> {
 
         @Override
         protected void onPreExecute() {
@@ -118,24 +122,21 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         }
 
         @Override
-        protected String[] doInBackground(String... params) {
+        protected String[] doInBackground(Integer... params) {
 
             /* If there's no zip code, there's nothing to look up. */
             if (params.length == 0) {
                 return null;
             }
 
-            String location = params[0];
-            URL weatherRequestUrl = NetworkUtils.buildUrl(location);
+            URL url = NetworkUtils.buildUrl(MainActivity.this, params[0]);
 
             try {
-                String jsonWeatherResponse = NetworkUtils
-                        .getResponseFromHttpUrl(weatherRequestUrl);
+                String respuestaJson = NetworkUtils
+                        .getResponseFromHttpUrl(url);
 
-                String[] simpleJsonWeatherData = PeliculasJsonUtils
-                        .getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
-
-                return simpleJsonWeatherData;
+                return PeliculasJsonUtils
+                        .obtenerPosterPeliculas(MainActivity.this, respuestaJson);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -144,11 +145,11 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         }
 
         @Override
-        protected void onPostExecute(String[] datosPeliculas) {
+        protected void onPostExecute(String[] postersPeliculas) {
             mCargando.setVisibility(View.INVISIBLE);
-            if (datosPeliculas != null) {
+            if (postersPeliculas != null) {
                 mostrarDatosPeliculas();
-                mTheMovieDbAdapter.establecerDatosPeliculas(datosPeliculas);
+                mTheMovieDbAdapter.establecerDatosPeliculas(postersPeliculas);
             } else {
                 mostrarMensajeError();
             }

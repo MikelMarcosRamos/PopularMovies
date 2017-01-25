@@ -17,6 +17,8 @@ package com.example.android.popularmovies.data;
 
 import android.content.Context;
 
+import com.example.android.popularmovies.R;
+
 public class TheMovieDbPreferencias {
 
     /*
@@ -77,18 +79,13 @@ public class TheMovieDbPreferencias {
         /** This will be implemented in a future lesson **/
     }
 
+
     /**
-     * Returns the location currently set in Preferences. The default location this method
-     * will return is "94043,USA", which is Mountain View, California. Mountain View is the
-     * home of the headquarters of the Googleplex!
-     *
-     * @param context Context used to get the SharedPreferences
-     * @return Location The current user has set in SharedPreferences. Will default to
-     * "94043,USA" if SharedPreferences have not been implemented yet.
+     * Obtiene la lista a mostrar por defecto
+     * @return id de la acción por defecto
      */
-    public static String getPreferredWeatherLocation(Context context) {
-        /** This will be implemented in a future lesson **/
-        return getDefaultWeatherLocation();
+    public static Integer obtenerListaPorDefecto() {
+        return R.id.accion_popular;
     }
 
     /**

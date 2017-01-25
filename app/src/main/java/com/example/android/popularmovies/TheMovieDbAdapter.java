@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -103,7 +104,7 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
         String weatherForThisDay = this.mDatosPeliculas[position];
         Log.v("prueba", weatherForThisDay);
         Picasso.with(theMovieDbAdapteriewHolder.mContext)
-                .load("http://i.imgur.com/DvpvklR.png")
+                .load(NetworkUtils.obtenerRutaImagen(weatherForThisDay))
                 .into(theMovieDbAdapteriewHolder.mCartelPelicula);
     }
 
@@ -124,10 +125,10 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
      * created one. This is handy when we get new data from the web but don't want to create a
      * new ForecastAdapter to display it.
      *
-     * @param datosPeliculas The new weather data to be displayed.
+     * @param postersPeliculas The new weather data to be displayed.
      */
-    public void establecerDatosPeliculas(String[] datosPeliculas) {
-        this.mDatosPeliculas = datosPeliculas;
+    public void establecerDatosPeliculas(String[] postersPeliculas) {
+        this.mDatosPeliculas = postersPeliculas;
         notifyDataSetChanged();
     }
 

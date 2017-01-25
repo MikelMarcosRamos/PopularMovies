@@ -15,14 +15,19 @@
  */
 package com.example.android.popularmovies.utilities;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+
+import com.example.android.popularmovies.R;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -32,13 +37,12 @@ public final class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
-    private static final String DYNAMIC_WEATHER_URL =
-            "https://andfun-weather.udacity.com/weather";
+    private static final String BASE_URL_BUSCAR =
+            "https://api.themoviedb.org/3/movie/";
 
-    private static final String STATIC_WEATHER_URL =
-            "https://andfun-weather.udacity.com/staticweather";
+    private static final String BASE_URL_IMAGEN =
+            "https://image.tmdb.org/t/p/w185/";
 
-    private static final String FORECAST_BASE_URL = STATIC_WEATHER_URL;
 
     /*
      * NOTE: These values only effect responses from OpenWeatherMap, NOT from the fake weather
@@ -49,31 +53,35 @@ public final class NetworkUtils {
 
     /* The format we want our API to return */
     private static final String format = "json";
-    /* The units we want our API to return */
-    private static final String units = "metric";
-    /* The number of days we want our API to return */
-    private static final int numDays = 14;
 
-    final static String QUERY_PARAM = "q";
-    final static String LAT_PARAM = "lat";
-    final static String LON_PARAM = "lon";
-    final static String FORMAT_PARAM = "mode";
-    final static String UNITS_PARAM = "units";
-    final static String DAYS_PARAM = "cnt";
+    static Map<Integer, String> BUSQUEDAS = new HashMap<Integer, String>() {{
+        put(R.id.accion_popular, "popular");
+        put(R.id.accion_puntuacion, "top_rated");
+    }} ;
+
+    final static String PARAMETRO_API = "api_key";
+    final static String PARAMETRO_IDIOMA = "language";
+    final static String PARAMETRO_PAGINA = "page";
+    final static String PARAMETRO_REGION = "region";
+
+    final static String VALOR_IDIOMA = "es-ES";
+    final static Integer VALOR_PAGINA = 1;
+    final static String VALOR_REGION = "Spain";
+
 
     /**
-     * Builds the URL used to talk to the weather server using a location. This location is based
-     * on the query capabilities of the weather provider that we are using.
+     * Crea la URL usada para pedir al servidor el listado de películas.
      *
-     * @param locationQuery The location that will be queried for.
-     * @return The URL to use to query the weather server.
+     * @param tipoBusqueda tipo de búsqueda a realizar.
+     * @return URL para la búsqueda de las películas.
      */
-    public static URL buildUrl(String locationQuery) {
-        Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                .appendQueryParameter(QUERY_PARAM, locationQuery)
-                .appendQueryParameter(FORMAT_PARAM, format)
-                .appendQueryParameter(UNITS_PARAM, units)
-                .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
+    public static URL buildUrl(Context context, Integer tipoBusqueda) {
+        String etiqueta = BUSQUEDAS.get(tipoBusqueda);
+        Uri builtUri = Uri.parse(BASE_URL_BUSCAR + etiqueta).buildUpon()
+                .appendQueryParameter(PARAMETRO_API, context.getString(R.string.api_key))
+                .appendQueryParameter(PARAMETRO_IDIOMA, VALOR_IDIOMA)
+                .appendQueryParameter(PARAMETRO_PAGINA, Integer.toString(VALOR_PAGINA))
+                .appendQueryParameter(PARAMETRO_REGION, VALOR_REGION)
                 .build();
 
         URL url = null;
@@ -125,5 +133,9 @@ public final class NetworkUtils {
         } finally {
             urlConnection.disconnect();
         }
+    }
+
+    public static String obtenerRutaImagen(String imagen) {
+        return BASE_URL_IMAGEN + imagen;
     }
 }
