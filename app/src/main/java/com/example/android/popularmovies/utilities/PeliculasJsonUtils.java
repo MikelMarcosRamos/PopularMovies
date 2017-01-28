@@ -25,11 +25,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
+
 /**
  * Utility functions to handle OpenWeatherMap JSON data.
  */
 public final class PeliculasJsonUtils {
 
+    private static final String JM_CODIGO_ERROR = "status_code";
     private static final String JM_RESULTADOS = "results";
 
     private static final String JM_RUTA_POSTER = "poster_path";
@@ -39,16 +42,13 @@ public final class PeliculasJsonUtils {
     private static final String JM_SINOPSIS = "overview";
 
     /**
-     * This method parses JSON from a web response and returns an array of Strings
-     * describing the weather over various days from the forecast.
+     * This method parses JSON from a web response and returns an array of Pelicula
+     * with the information.
      * <p/>
-     * Later on, we'll be parsing the JSON into structured data within the
-     * getFullWeatherDataFromJson function, leveraging the data we have stored in the JSON. For
-     * now, we just convert the JSON into human-readable strings.
      *
      * @param peliculasJsonStr JSON response from server
      *
-     * @return Array of Strings describing weather data
+     * @return Array of Pelicula with the films data
      *
      * @throws JSONException If JSON data cannot be properly parsed
      */
@@ -57,13 +57,30 @@ public final class PeliculasJsonUtils {
 
         JSONObject peliculasJson = new JSONObject(peliculasJsonStr);
 
+        if (peliculasJson.has(JM_CODIGO_ERROR)) {
+            int errorCode = peliculasJson.getInt(JM_CODIGO_ERROR);
+
+            switch (errorCode) {
+                case HttpURLConnection.HTTP_OK:
+                    break;
+                case HttpURLConnection.HTTP_UNAUTHORIZED:
+                    /* Invalid API key */
+                    return null;
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    /* Invalid request */
+                    return null;
+                default:
+                    /* Server probably down */
+                    return null;
+            }
+        }
+
         JSONArray arrayPeliculas = peliculasJson.getJSONArray(JM_RESULTADOS);
 
         Pelicula[] peliculas = new Pelicula[arrayPeliculas.length()];
 
         for (int i = 0; i < arrayPeliculas.length(); i++) {
 
-            /* Get the JSON object representing the day */
             JSONObject peliculaJSObject = arrayPeliculas.getJSONObject(i);
 
             Pelicula pelicula = new Pelicula();
@@ -75,18 +92,5 @@ public final class PeliculasJsonUtils {
             peliculas[i] = pelicula;
         }
         return peliculas;
-    }
-
-    /**
-     * Parse the JSON and convert it into ContentValues that can be inserted into our database.
-     *
-     * @param context         An application context, such as a service or activity context.
-     * @param forecastJsonStr The JSON to parse into ContentValues.
-     *
-     * @return An array of ContentValues parsed from the JSON.
-     */
-    public static ContentValues[] getFullWeatherDataFromJson(Context context, String forecastJsonStr) {
-        /** This will be implemented in a future lesson **/
-        return null;
     }
 }

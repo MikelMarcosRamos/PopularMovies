@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * These utilities will be used to communicate with the weather servers.
+ * These utilities will be used to communicate with the movie db server.
  */
 public final class NetworkUtils {
 
@@ -45,34 +45,26 @@ public final class NetworkUtils {
             "https://image.tmdb.org/t/p/w500/";
 
 
-    /*
-     * NOTE: These values only effect responses from OpenWeatherMap, NOT from the fake weather
-     * server. They are simply here to allow us to teach you how to build a URL if you were to use
-     * a real API.If you want to connect your app to OpenWeatherMap's API, feel free to! However,
-     * we are not going to show you how to do so in this course.
-     */
-
-    /* The format we want our API to return */
     private static final String format = "json";
 
-    static Map<Integer, String> BUSQUEDAS = new HashMap<Integer, String>() {{
+    private static Map<Integer, String> BUSQUEDAS = new HashMap<Integer, String>() {{
         put(R.id.accion_popular, "popular");
         put(R.id.accion_puntuacion, "top_rated");
     }} ;
 
-    final static String PARAMETRO_API = "api_key";
-    final static String PARAMETRO_IDIOMA = "language";
-    final static String PARAMETRO_PAGINA = "page";
-    final static String PARAMETRO_REGION = "region";
+    private final static String PARAMETRO_API = "api_key";
+    private final static String PARAMETRO_IDIOMA = "language";
+    private final static String PARAMETRO_PAGINA = "page";
+    private final static String PARAMETRO_REGION = "region";
 
 
 
 
     /**
-     * Crea la URL usada para pedir al servidor el listado de películas.
+     * Build the url of the request for the movie db server.
      *
-     * @param tipoBusqueda tipo de búsqueda a realizar.
-     * @return URL para la búsqueda de las películas.
+     * @param tipoBusqueda with the type of search to do.
+     * @return URL for the request.
      */
     public static URL buildUrl(Context context, Integer tipoBusqueda) {
         String etiqueta = BUSQUEDAS.get(tipoBusqueda);
@@ -93,19 +85,6 @@ public final class NetworkUtils {
         Log.v(TAG, "Built URI " + url);
 
         return url;
-    }
-
-    /**
-     * Builds the URL used to talk to the weather server using latitude and longitude of a
-     * location.
-     *
-     * @param lat The latitude of the location
-     * @param lon The longitude of the location
-     * @return The Url to use to query the weather server.
-     */
-    public static URL buildUrl(Double lat, Double lon) {
-        /** This will be implemented in a future lesson **/
-        return null;
     }
 
     /**
@@ -134,6 +113,12 @@ public final class NetworkUtils {
         }
     }
 
+    /**
+     * Build the url of the image for the movie db server.
+     *
+     * @param imagen with the image path.
+     * @return String for the request.
+     */
     public static String getRutaImagen(String imagen) {
         return BASE_URL_IMAGEN + imagen;
     }

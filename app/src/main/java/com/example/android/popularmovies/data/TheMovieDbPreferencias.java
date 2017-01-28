@@ -17,6 +17,9 @@ package com.example.android.popularmovies.data;
 
 import com.example.android.popularmovies.R;
 
+/**
+ * Class to store prefered values to search
+ */
 public class TheMovieDbPreferencias {
 
     public final static String VALOR_IDIOMA = "es-ES";
@@ -24,8 +27,8 @@ public class TheMovieDbPreferencias {
     public final static String VALOR_REGION = "Spain";
 
     /**
-     * Obtiene la lista a mostrar por defecto
-     * @return id de la acción por defecto
+     * Get the default list to show
+     * @return id of the list to show by default
      */
     public static Integer getListaPorDefecto() {
         return R.id.accion_popular;

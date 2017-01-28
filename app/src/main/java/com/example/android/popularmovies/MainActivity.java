@@ -37,9 +37,6 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*
-         * Obtener los elementos de la pantalla principal para su posterior uso
-         */
         this.mRvPeliculas = (RecyclerView) this.findViewById(R.id.rv_peliculas);
         this.mMostrarError = (TextView) this.findViewById(R.id.tv_mostrar_error);
         this.mCargando = (ProgressBar) this.findViewById(R.id.pb_cargando);
@@ -51,14 +48,10 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         this.mTheMovieDbAdapter = new TheMovieDbAdapter(this);
         this.mRvPeliculas.setAdapter(this.mTheMovieDbAdapter);
 
-        /* Once all of our views are setup, we can load the weather data. */
         cargarDatosPeliculas();
     }
 
-    /**
-     * This method will get the user's preferred location for weather, and then tell some
-     * background method to get the weather data in the background.
-     */
+
     private void cargarDatosPeliculas() {
         Integer tipoLista = TheMovieDbPreferencias.getListaPorDefecto();
         cargarDatosPeliculas(tipoLista);
@@ -70,12 +63,6 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         new CargarPeliculasTarea().execute(tipoLista);
     }
 
-    /**
-     * This method is overridden by our MainActivity class in order to handle RecyclerView item
-     * clicks.
-     *
-     * @param pelicula The weather for the day that was clicked
-     */
     @Override
     public void onClick(Pelicula pelicula) {
         Context context = this;
@@ -85,13 +72,6 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         startActivity(intentToStartDetailActivity);
     }
 
-    /**
-     * This method will make the View for the weather data visible and
-     * hide the error message.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
     private void mostrarDatosPeliculas() {
         /* First, make sure the error is invisible */
         this.mMostrarError.setVisibility(View.INVISIBLE);
@@ -99,13 +79,6 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         this.mRvPeliculas.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * This method will make the error message visible and hide the weather
-     * View.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
     private void mostrarMensajeError() {
         /* First, hide the currently visible data */
         this.mRvPeliculas.setVisibility(View.INVISIBLE);
@@ -113,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         this.mMostrarError.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * AsyncTask to load films information
+     */
     public class CargarPeliculasTarea extends AsyncTask<Integer, Void, Pelicula[]> {
 
         @Override

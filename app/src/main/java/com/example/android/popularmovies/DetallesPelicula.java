@@ -10,6 +10,9 @@ import com.example.android.popularmovies.data.Pelicula;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+/**
+ * Activity to show the film details
+ */
 public class DetallesPelicula extends AppCompatActivity {
 
     private TextView mTitulo;
