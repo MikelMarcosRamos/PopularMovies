@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.data.Pelicula;
 import com.example.android.popularmovies.data.TheMovieDbPreferencias;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.example.android.popularmovies.utilities.PeliculasJsonUtils;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
      * background method to get the weather data in the background.
      */
     private void cargarDatosPeliculas() {
-        Integer tipoLista = TheMovieDbPreferencias.obtenerListaPorDefecto();
+        Integer tipoLista = TheMovieDbPreferencias.getListaPorDefecto();
         cargarDatosPeliculas(tipoLista);
     }
 
@@ -73,15 +74,14 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
      * This method is overridden by our MainActivity class in order to handle RecyclerView item
      * clicks.
      *
-     * @param weatherForDay The weather for the day that was clicked
+     * @param pelicula The weather for the day that was clicked
      */
     @Override
-    public void onClick(String weatherForDay) {
+    public void onClick(Pelicula pelicula) {
         Context context = this;
         Class destinationClass = DetallesPelicula.class;
         Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        // COMPLETED (1) Pass the weather to the DetailActivity
-        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, weatherForDay);
+        intentToStartDetailActivity.putExtra("pelicula", pelicula);
         startActivity(intentToStartDetailActivity);
     }
 
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         this.mMostrarError.setVisibility(View.VISIBLE);
     }
 
-    public class CargarPeliculasTarea extends AsyncTask<Integer, Void, String[]> {
+    public class CargarPeliculasTarea extends AsyncTask<Integer, Void, Pelicula[]> {
 
         @Override
         protected void onPreExecute() {
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         }
 
         @Override
-        protected String[] doInBackground(Integer... params) {
+        protected Pelicula[] doInBackground(Integer... params) {
 
             /* If there's no zip code, there's nothing to look up. */
             if (params.length == 0) {
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
                         .getResponseFromHttpUrl(url);
 
                 return PeliculasJsonUtils
-                        .obtenerPosterPeliculas(MainActivity.this, respuestaJson);
+                        .getPeliculas(MainActivity.this, respuestaJson);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -145,11 +145,11 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         }
 
         @Override
-        protected void onPostExecute(String[] postersPeliculas) {
+        protected void onPostExecute(Pelicula[] peliculas) {
             mCargando.setVisibility(View.INVISIBLE);
-            if (postersPeliculas != null) {
+            if (peliculas != null) {
                 mostrarDatosPeliculas();
-                mTheMovieDbAdapter.establecerDatosPeliculas(postersPeliculas);
+                mTheMovieDbAdapter.setDatosPeliculas(peliculas);
             } else {
                 mostrarMensajeError();
             }
@@ -171,8 +171,12 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         int id = item.getItemId();
 
         if (id == R.id.accion_popular) {
-            mTheMovieDbAdapter.establecerDatosPeliculas(null);
-            cargarDatosPeliculas();
+            mTheMovieDbAdapter.setDatosPeliculas(null);
+            cargarDatosPeliculas(id);
+            return true;
+        } else if (id == R.id.accion_puntuacion) {
+            mTheMovieDbAdapter.setDatosPeliculas(null);
+            cargarDatosPeliculas(id);
             return true;
         }
 

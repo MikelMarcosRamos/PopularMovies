@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.data.TheMovieDbPreferencias;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +42,7 @@ public final class NetworkUtils {
             "https://api.themoviedb.org/3/movie/";
 
     private static final String BASE_URL_IMAGEN =
-            "https://image.tmdb.org/t/p/w185/";
+            "https://image.tmdb.org/t/p/w500/";
 
 
     /*
@@ -64,9 +65,7 @@ public final class NetworkUtils {
     final static String PARAMETRO_PAGINA = "page";
     final static String PARAMETRO_REGION = "region";
 
-    final static String VALOR_IDIOMA = "es-ES";
-    final static Integer VALOR_PAGINA = 1;
-    final static String VALOR_REGION = "Spain";
+
 
 
     /**
@@ -79,9 +78,9 @@ public final class NetworkUtils {
         String etiqueta = BUSQUEDAS.get(tipoBusqueda);
         Uri builtUri = Uri.parse(BASE_URL_BUSCAR + etiqueta).buildUpon()
                 .appendQueryParameter(PARAMETRO_API, context.getString(R.string.api_key))
-                .appendQueryParameter(PARAMETRO_IDIOMA, VALOR_IDIOMA)
-                .appendQueryParameter(PARAMETRO_PAGINA, Integer.toString(VALOR_PAGINA))
-                .appendQueryParameter(PARAMETRO_REGION, VALOR_REGION)
+                .appendQueryParameter(PARAMETRO_IDIOMA, TheMovieDbPreferencias.VALOR_IDIOMA)
+                .appendQueryParameter(PARAMETRO_PAGINA, Integer.toString(TheMovieDbPreferencias.VALOR_PAGINA))
+                .appendQueryParameter(PARAMETRO_REGION, TheMovieDbPreferencias.VALOR_REGION)
                 .build();
 
         URL url = null;
@@ -135,7 +134,7 @@ public final class NetworkUtils {
         }
     }
 
-    public static String obtenerRutaImagen(String imagen) {
+    public static String getRutaImagen(String imagen) {
         return BASE_URL_IMAGEN + imagen;
     }
 }

@@ -19,16 +19,24 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.android.popularmovies.data.Pelicula;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.net.HttpURLConnection;
 
 /**
  * Utility functions to handle OpenWeatherMap JSON data.
  */
 public final class PeliculasJsonUtils {
+
+    private static final String JM_RESULTADOS = "results";
+
+    private static final String JM_RUTA_POSTER = "poster_path";
+    private static final String JM_FECHA_ESTRENO = "release_date";
+    private static final String JM_TITULO = "title";
+    private static final String JM_MEDIA_VOTOS = "vote_average";
+    private static final String JM_SINOPSIS = "overview";
 
     /**
      * This method parses JSON from a web response and returns an array of Strings
@@ -44,28 +52,29 @@ public final class PeliculasJsonUtils {
      *
      * @throws JSONException If JSON data cannot be properly parsed
      */
-    public static String[] obtenerPosterPeliculas(Context context, String peliculasJsonStr)
+    public static Pelicula[] getPeliculas(Context context, String peliculasJsonStr)
             throws JSONException {
-        Log.v("json",peliculasJsonStr);
-        /* Weather information. Each day's forecast info is an element of the "list" array */
-        final String JM_RESULTADOS = "results";
-        final String JM_RUTA_POSTER = "poster_path";
 
         JSONObject peliculasJson = new JSONObject(peliculasJsonStr);
 
         JSONArray arrayPeliculas = peliculasJson.getJSONArray(JM_RESULTADOS);
 
-        String[] arrayPosterPeliculas = new String[arrayPeliculas.length()];
+        Pelicula[] peliculas = new Pelicula[arrayPeliculas.length()];
 
         for (int i = 0; i < arrayPeliculas.length(); i++) {
 
             /* Get the JSON object representing the day */
-            JSONObject pelicula = arrayPeliculas.getJSONObject(i);
+            JSONObject peliculaJSObject = arrayPeliculas.getJSONObject(i);
 
-            arrayPosterPeliculas[i] = pelicula.getString(JM_RUTA_POSTER);
+            Pelicula pelicula = new Pelicula();
+            pelicula.setTitulo(peliculaJSObject.getString(JM_TITULO));
+            pelicula.setPoster(peliculaJSObject.getString(JM_RUTA_POSTER));
+            pelicula.setFechaEstreno(peliculaJSObject.getString(JM_FECHA_ESTRENO));
+            pelicula.setMediaVotos(peliculaJSObject.getDouble(JM_MEDIA_VOTOS));
+            pelicula.setSinopsis(peliculaJSObject.getString(JM_SINOPSIS));
+            peliculas[i] = pelicula;
         }
-        Log.v("peliculas", arrayPosterPeliculas.toString());
-        return arrayPosterPeliculas;
+        return peliculas;
     }
 
     /**
