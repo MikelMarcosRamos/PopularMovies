@@ -7,7 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.android.popularmovies.data.Pelicula;
+import com.example.android.popularmovies.data.Movie;
+import com.example.android.popularmovies.data.Movies;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -18,7 +19,7 @@ import com.squareup.picasso.Picasso;
  */
 public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.TheMovieDbAdapteriewHolder> {
 
-    private Pelicula[] mPeliculas;
+    private Movies mMovies;
 
     /*
      * An on-click handler that we've defined to make it easy for an Activity to interface with
@@ -30,7 +31,7 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
      * The interface that receives onClick messages.
      */
     public interface TheMovieDbAdapterOnClickHandler {
-        void onClick(Pelicula codPelicula);
+        void onClick(Movie codMovie);
     }
 
     /**
@@ -57,8 +58,8 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            Pelicula pelicula = mPeliculas[adapterPosition];
-            mClickHandler.onClick(pelicula);
+            Movie movie = mMovies.getMovies().get(adapterPosition);
+            mClickHandler.onClick(movie);
         }
     }
 
@@ -77,23 +78,25 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
 
     @Override
     public void onBindViewHolder(TheMovieDbAdapteriewHolder theMovieDbAdapteriewHolder, int position) {
-        Pelicula pelicula = this.mPeliculas[position];
+        Movie movie = mMovies.getMovies().get(position);
 
         Picasso.with(theMovieDbAdapteriewHolder.mContext)
-                .load(NetworkUtils.getRutaImagen(pelicula.getPoster()))
+                .load(NetworkUtils.getRutaImagen(movie.getPoster()))
+                .placeholder(R.mipmap.im_loading)
+                .error(R.mipmap.ic_not_found)
                 .into(theMovieDbAdapteriewHolder.mCartelPelicula);
     }
 
 
     @Override
     public int getItemCount() {
-        if (null == this.mPeliculas) return 0;
-        return this.mPeliculas.length;
+        if (null == this.mMovies) return 0;
+        return this.mMovies.getMovies().size();
     }
 
 
-    public void setDatosPeliculas(Pelicula[] pelicula) {
-        this.mPeliculas = pelicula;
+    public void setDatosPeliculas(Movies movies) {
+        this.mMovies = movies;
         notifyDataSetChanged();
     }
 
