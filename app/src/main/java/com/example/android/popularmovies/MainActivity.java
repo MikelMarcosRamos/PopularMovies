@@ -33,6 +33,10 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
 
     private ProgressBar mCargando;
 
+    private int mTipoLista;
+
+    private static final String TIPO_LISTA = "TIPO_LISTA";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,21 +54,25 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         this.mTheMovieDbAdapter = new TheMovieDbAdapter(this);
         this.mRvPeliculas.setAdapter(this.mTheMovieDbAdapter);
 
+        if (savedInstanceState != null) {
+            this.mTipoLista = savedInstanceState.getInt(TIPO_LISTA);
+        }
+
         cargarDatosPeliculas();
     }
 
 
     private void cargarDatosPeliculas() {
-        Integer tipoLista = TheMovieDbPreferencias.getListaPorDefecto();
-        cargarDatosPeliculas(tipoLista);
-    }
+        if (this.mTipoLista < 1) {
+            this.mTipoLista = TheMovieDbPreferencias.getListaPorDefecto();
+        }
 
-    private void cargarDatosPeliculas(Integer tipoLista) {
         mostrarDatosPeliculas();
 
-        Call<Movies> moviesCall = new ClienteRest(this).obtenerPeliculas(tipoLista);
+        Call<Movies> moviesCall = new ClienteRest(this).obtenerPeliculas(this.mTipoLista);
         moviesCall.enqueue(this);
     }
+
 
     private int calcularColumnasListado(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
@@ -108,19 +116,16 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        this.mTipoLista = item.getItemId();
 
-        if (id == R.id.accion_popular) {
-            mTheMovieDbAdapter.setDatosPeliculas(null);
-            cargarDatosPeliculas(id);
-            return true;
-        } else if (id == R.id.accion_puntuacion) {
-            mTheMovieDbAdapter.setDatosPeliculas(null);
-            cargarDatosPeliculas(id);
-            return true;
+        switch (this.mTipoLista) {
+            case R.id.accion_popular:
+            case R.id.accion_puntuacion:
+                cargarDatosPeliculas();
+                return true;
+            default:
+                throw new UnsupportedOperationException();
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -137,5 +142,11 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
     @Override
     public void onFailure(Call<Movies> call, Throwable t) {
         mostrarMensajeError();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(TIPO_LISTA, this.mTipoLista);
     }
 }
