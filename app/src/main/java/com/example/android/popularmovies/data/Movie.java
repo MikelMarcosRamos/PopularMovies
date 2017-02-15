@@ -4,6 +4,13 @@ package com.example.android.popularmovies.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.android.popularmovies.VideoAdapter;
+import com.example.android.popularmovies.utilities.ClienteRest;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Created by android on 27/01/17.
  * Class to save films information
@@ -24,6 +31,9 @@ public class Movie implements Parcelable {
     protected int vote_count;
     protected boolean video;
     protected double vote_average;
+
+    protected Responses<Video> mVideos;
+    protected Responses<Review> mCriticas;
 
     @Override
     public int describeContents() {
@@ -47,6 +57,8 @@ public class Movie implements Parcelable {
         dest.writeInt(vote_count);
         dest.writeByte((byte) (video ? 1 : 0));
         dest.writeDouble(vote_average);
+        dest.writeParcelable(mVideos, 0);
+        dest.writeParcelable(mCriticas, 0);
     }
 
     /**
@@ -69,6 +81,9 @@ public class Movie implements Parcelable {
         vote_count = p.readInt();
         video = p.readByte() != 0;
         vote_average = p.readDouble();
+        mVideos = p.readParcelable(Responses.class.getClassLoader());
+        mCriticas = p.readParcelable(Responses.class.getClassLoader());
+
     }
 
     /**
@@ -99,6 +114,15 @@ public class Movie implements Parcelable {
             return new Movie[size];
         }
     };
+
+    /**
+     * Get the value of the property id
+     * @return int with the value of id
+     */
+    public int getId() {
+        return id;
+    }
+
 
     /**
      * Get the value of the property titulo
@@ -169,5 +193,28 @@ public class Movie implements Parcelable {
      */
     public void setSinopsis(String sinopsis) {
         this.overview = sinopsis;
+    }
+    /**
+     * Get the value of the property mVideos
+     * @return Responses<Video> with the value of mVideos
+     */
+    public Responses<Video> getVideos(final VideoAdapter videoAdapter) {
+        if (mVideos == null) {
+            Call<Responses<Video>> videosCall = new ClienteRest().obtenerVideos(this.id);
+            videosCall.enqueue(new Callback<Responses<Video>>() {
+                @Override
+                public void onResponse(Call<Responses<Video>> call, Response<Responses<Video>> response) {
+                    if (response.isSuccessful()) {
+                        videoAdapter.setVideos(response.body());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Responses<Video>> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        }
+        return mVideos;
     }
 }

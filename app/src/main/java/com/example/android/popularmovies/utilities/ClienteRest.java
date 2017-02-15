@@ -3,8 +3,11 @@ package com.example.android.popularmovies.utilities;
 import android.content.Context;
 
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.data.Movies;
+import com.example.android.popularmovies.data.Movie;
+import com.example.android.popularmovies.data.Responses;
+import com.example.android.popularmovies.data.Review;
 import com.example.android.popularmovies.data.TheMovieDbPreferencias;
+import com.example.android.popularmovies.data.Video;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -20,7 +23,7 @@ public class ClienteRest {
     private static final int VERSION_API = 3;
     private static final String URL = "https://" + BASE_URL + "/" + Integer.toString(VERSION_API) + "/";
 
-    private String mClave;
+    private static String mClave;
 
     private Retrofit mRestAdapter;
 
@@ -35,6 +38,8 @@ public class ClienteRest {
 
     // Servicios
     private IMovieApi mMovieService;
+
+    public ClienteRest() {}
 
     public ClienteRest(Context context)
     {
@@ -64,10 +69,10 @@ public class ClienteRest {
         return mMovieService;
     }
 
-    public Call<Movies> obtenerPeliculas(Integer tipoLista){
+    public Call<Responses<Movie>> obtenerPeliculas(Integer tipoLista){
         String etiqueta = BUSQUEDAS.get(tipoLista);
 
-        Map<String, String> opciones = new HashMap<String, String>();
+        Map<String, String> opciones = new HashMap<>();
         opciones.put(PARAMETRO_API, mClave);
         opciones.put(PARAMETRO_IDIOMA, TheMovieDbPreferencias.VALOR_IDIOMA);
         opciones.put(PARAMETRO_PAGINA, Integer.toString(TheMovieDbPreferencias.VALOR_PAGINA));
@@ -76,6 +81,22 @@ public class ClienteRest {
         return getMovieService().obtenerPeliculas(etiqueta, opciones);
     }
 
+    public Call<Responses<Video>> obtenerVideos(Integer id){
 
+        Map<String, String> opciones = new HashMap<>();
+        opciones.put(PARAMETRO_API, mClave);
+        opciones.put(PARAMETRO_IDIOMA, TheMovieDbPreferencias.VALOR_IDIOMA);
 
+        return getMovieService().obtenerVideos(id, opciones);
+    }
+
+    public Call<Responses<Review>> obtenerCriticas(Integer id){
+
+        Map<String, String> opciones = new HashMap<>();
+        opciones.put(PARAMETRO_API, mClave);
+        opciones.put(PARAMETRO_IDIOMA, TheMovieDbPreferencias.VALOR_IDIOMA);
+        opciones.put(PARAMETRO_PAGINA, Integer.toString(TheMovieDbPreferencias.VALOR_PAGINA));
+
+        return getMovieService().obtenerCriticas(id, opciones);
+    }
 }

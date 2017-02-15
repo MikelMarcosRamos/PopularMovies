@@ -6,4 +6,8 @@
     <string name="lbl_fecha_estreno">Fecha de estreno:</string>
     <string name="lbl_media_votos">Media de votos:</string>
     <string name="lbl_sinopsis">Sinopsis:</string>
+    <string name="lbl_videos">Videos:</string>
+    <string name="lbl_criticas">Críticas:</string>
+    <string name="movie_review">Crítica</string>
+    <string name="poster_pelicula">Poster película</string>
 </resources>

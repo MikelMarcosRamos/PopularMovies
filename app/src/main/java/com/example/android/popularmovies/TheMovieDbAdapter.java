@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.android.popularmovies.data.Movie;
-import com.example.android.popularmovies.data.Movies;
+import com.example.android.popularmovies.data.Responses;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -19,7 +19,7 @@ import com.squareup.picasso.Picasso;
  */
 public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.TheMovieDbAdapteriewHolder> {
 
-    private Movies mMovies;
+    private Responses<Movie> mMovies;
 
     /*
      * An on-click handler that we've defined to make it easy for an Activity to interface with
@@ -58,7 +58,7 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            Movie movie = mMovies.getMovies().get(adapterPosition);
+            Movie movie = mMovies.getResults().get(adapterPosition);
             mClickHandler.onClick(movie);
         }
     }
@@ -78,7 +78,7 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
 
     @Override
     public void onBindViewHolder(TheMovieDbAdapteriewHolder theMovieDbAdapteriewHolder, int position) {
-        Movie movie = mMovies.getMovies().get(position);
+        Movie movie = mMovies.getResults().get(position);
 
         Picasso.with(theMovieDbAdapteriewHolder.mContext)
                 .load(NetworkUtils.getRutaImagen(movie.getPoster()))
@@ -91,11 +91,11 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
     @Override
     public int getItemCount() {
         if (null == this.mMovies) return 0;
-        return this.mMovies.getMovies().size();
+        return this.mMovies.getResults().size();
     }
 
 
-    public void setDatosPeliculas(Movies movies) {
+    public void setDatosPeliculas(Responses<Movie> movies) {
         this.mMovies = movies;
         notifyDataSetChanged();
     }

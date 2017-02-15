@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.popularmovies.data.Movie;
-import com.example.android.popularmovies.data.Movies;
+import com.example.android.popularmovies.data.Responses;
 import com.example.android.popularmovies.data.TheMovieDbPreferencias;
 import com.example.android.popularmovies.utilities.ClienteRest;
 
@@ -23,7 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter.TheMovieDbAdapterOnClickHandler, Callback<Movies> {
+public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter.TheMovieDbAdapterOnClickHandler, Callback<Responses<Movie>> {
 
     private RecyclerView mRvPeliculas;
 
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
 
         mostrarDatosPeliculas();
 
-        Call<Movies> moviesCall = new ClienteRest(this).obtenerPeliculas(this.mTipoLista);
+        Call<Responses<Movie>> moviesCall = new ClienteRest(this).obtenerPeliculas(this.mTipoLista);
         moviesCall.enqueue(this);
     }
 
@@ -77,8 +77,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
     private int calcularColumnasListado(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        int numColumnas = (int) (dpWidth / 180);
-        return numColumnas;
+        return (int) (dpWidth / 180);
     }
 
     @Override
@@ -129,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
     }
 
     @Override
-    public void onResponse(Call<Movies> call, Response<Movies> response) {
+    public void onResponse(Call<Responses<Movie>> call, Response<Responses<Movie>> response) {
         if(response.isSuccessful()) {
             mCargando.setVisibility(View.INVISIBLE);
             mostrarDatosPeliculas();
@@ -140,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
     }
 
     @Override
-    public void onFailure(Call<Movies> call, Throwable t) {
+    public void onFailure(Call<Responses<Movie>> call, Throwable t) {
         mostrarMensajeError();
     }
 
