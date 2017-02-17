@@ -5,11 +5,17 @@
         android:id="@+id/accion_popular"
         android:title="@string/orden_popular"
         android:orderInCategory="1"
-        android:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/accion_puntuacion"
         android:title="@string/orden_puntuacion"
         android:orderInCategory="2"
-        android:showAsAction="ifRoom" />
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/accion_favoritas"
+        android:title="@string/mis_favoritas"
+        android:orderInCategory="3"
+        app:showAsAction="never" />
 </menu>

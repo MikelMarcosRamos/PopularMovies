@@ -10,4 +10,7 @@
     <string name="lbl_criticas">Críticas:</string>
     <string name="movie_review">Crítica</string>
     <string name="poster_pelicula">Poster película</string>
+    <string name="no_favorita">No Favorita</string>
+    <string name="favorita">Favorita</string>
+    <string name="mis_favoritas">Mis Favoritas</string>
 </resources>
