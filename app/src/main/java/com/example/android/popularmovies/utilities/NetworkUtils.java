@@ -45,8 +45,6 @@ public final class NetworkUtils {
             "https://image.tmdb.org/t/p/w500/";
 
 
-    private static final String format = "json";
-
     private static Map<Integer, String> BUSQUEDAS = new HashMap<Integer, String>() {{
         put(R.id.accion_popular, "popular");
         put(R.id.accion_puntuacion, "top_rated");
@@ -56,62 +54,6 @@ public final class NetworkUtils {
     private final static String PARAMETRO_IDIOMA = "language";
     private final static String PARAMETRO_PAGINA = "page";
     private final static String PARAMETRO_REGION = "region";
-
-
-
-
-    /**
-     * Build the url of the request for the movie db server.
-     *
-     * @param tipoBusqueda with the type of search to do.
-     * @return URL for the request.
-     */
-    public static URL buildUrl(Context context, Integer tipoBusqueda) {
-        String etiqueta = BUSQUEDAS.get(tipoBusqueda);
-        Uri builtUri = Uri.parse(BASE_URL_BUSCAR + etiqueta).buildUpon()
-                .appendQueryParameter(PARAMETRO_API, context.getString(R.string.api_key))
-                .appendQueryParameter(PARAMETRO_IDIOMA, TheMovieDbPreferencias.VALOR_IDIOMA)
-                .appendQueryParameter(PARAMETRO_PAGINA, Integer.toString(TheMovieDbPreferencias.VALOR_PAGINA))
-                .appendQueryParameter(PARAMETRO_REGION, TheMovieDbPreferencias.VALOR_REGION)
-                .build();
-
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        Log.v(TAG, "Built URI " + url);
-
-        return url;
-    }
-
-    /**
-     * This method returns the entire result from the HTTP response.
-     *
-     * @param url The URL to fetch the HTTP response from.
-     * @return The contents of the HTTP response.
-     * @throws IOException Related to network and stream reading
-     */
-    public static String getResponseFromHttpUrl(URL url) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        try {
-            InputStream in = urlConnection.getInputStream();
-
-            Scanner scanner = new Scanner(in);
-            scanner.useDelimiter("\\A");
-
-            boolean hasInput = scanner.hasNext();
-            if (hasInput) {
-                return scanner.next();
-            } else {
-                return null;
-            }
-        } finally {
-            urlConnection.disconnect();
-        }
-    }
 
     /**
      * Build the url of the image for the movie db server.

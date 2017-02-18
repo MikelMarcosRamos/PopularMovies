@@ -2,6 +2,9 @@ package com.example.android.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,7 +26,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter.TheMovieDbAdapterOnClickHandler, Callback<Responses<Movie>> {
+public class MainActivity extends AppCompatActivity implements
+        TheMovieDbAdapter.TheMovieDbAdapterOnClickHandler
+        , Callback<Responses<Movie>>
+        ,LoaderManager.LoaderCallbacks<Cursor>{
 
     private RecyclerView mRvPeliculas;
 
@@ -36,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
     private int mTipoLista;
 
     private static final String TIPO_LISTA = "TIPO_LISTA";
+
+    private static final int MOVIE_LOADER_ID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
             this.mTipoLista = savedInstanceState.getInt(TIPO_LISTA);
         }
 
+        getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
         cargarDatosPeliculas();
     }
 
@@ -69,8 +78,12 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
 
         mostrarDatosPeliculas();
 
-        Call<Responses<Movie>> moviesCall = new ClienteRest(this).obtenerPeliculas(this.mTipoLista);
-        moviesCall.enqueue(this);
+        if (this.mTipoLista == R.id.accion_favoritas) {
+            getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+        } else {
+            Call<Responses<Movie>> moviesCall = new ClienteRest(this).obtenerPeliculas(this.mTipoLista);
+            moviesCall.enqueue(this);
+        }
     }
 
 
@@ -120,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
         switch (this.mTipoLista) {
             case R.id.accion_popular:
             case R.id.accion_puntuacion:
+            case R.id.accion_favoritas:
                 cargarDatosPeliculas();
                 return true;
             default:
@@ -147,5 +161,29 @@ public class MainActivity extends AppCompatActivity implements TheMovieDbAdapter
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(TIPO_LISTA, this.mTipoLista);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (this.mTipoLista == R.id.accion_favoritas) {
+            getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+        }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new DbAsyncLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mTheMovieDbAdapter.swapSource(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mTheMovieDbAdapter.swapSource(null);
     }
 }

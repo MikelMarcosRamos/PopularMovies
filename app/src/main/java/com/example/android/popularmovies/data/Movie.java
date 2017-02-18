@@ -46,8 +46,10 @@ public class Movie implements Parcelable {
         dest.writeByte((byte) (adult ? 1 : 0));
         dest.writeString(overview);
         dest.writeString(release_date);
-        dest.writeInt(genre_ids.length);
-        dest.writeIntArray(genre_ids);
+        dest.writeInt( (genre_ids != null)?genre_ids.length : 0);
+        if (genre_ids != null) {
+            dest.writeIntArray(genre_ids);
+        }
         dest.writeInt(id);
         dest.writeString(original_title);
         dest.writeString(original_language);
@@ -71,7 +73,9 @@ public class Movie implements Parcelable {
         overview = p.readString();
         release_date = p.readString();
         genre_ids = new int[p.readInt()];
-        p.readIntArray(genre_ids);
+        if (genre_ids.length > 0) {
+            p.readIntArray(genre_ids);
+        }
         id = p.readInt();
         original_title = p.readString();
         original_language = p.readString();
@@ -121,6 +125,13 @@ public class Movie implements Parcelable {
      */
     public int getId() {
         return id;
+    }
+    /**
+     * Set the value to the id property
+     * @param id value to store
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 
 
@@ -194,27 +205,5 @@ public class Movie implements Parcelable {
     public void setSinopsis(String sinopsis) {
         this.overview = sinopsis;
     }
-    /**
-     * Get the value of the property mVideos
-     * @return Responses<Video> with the value of mVideos
-     */
-    public Responses<Video> getVideos(final VideoAdapter videoAdapter) {
-        if (mVideos == null) {
-            Call<Responses<Video>> videosCall = new ClienteRest().obtenerVideos(this.id);
-            videosCall.enqueue(new Callback<Responses<Video>>() {
-                @Override
-                public void onResponse(Call<Responses<Video>> call, Response<Responses<Video>> response) {
-                    if (response.isSuccessful()) {
-                        videoAdapter.setVideos(response.body());
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<Responses<Video>> call, Throwable t) {
-                    t.printStackTrace();
-                }
-            });
-        }
-        return mVideos;
-    }
 }

@@ -23,10 +23,6 @@ import com.example.android.popularmovies.data.Video;
 import com.example.android.popularmovies.databinding.ActivityDetallesPeliculaBinding;
 import com.example.android.popularmovies.utilities.ClienteRest;
 import com.example.android.popularmovies.utilities.NetworkUtils;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.picasso.Picasso;
 
 import retrofit2.Call;
@@ -50,12 +46,6 @@ public class DetallesPelicula extends AppCompatActivity implements VideoAdapter.
 
     private RecyclerView mRvCriticas;
     private ReviewAdapter mReviewAdapter;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +68,6 @@ public class DetallesPelicula extends AppCompatActivity implements VideoAdapter.
 
 
         this.cargarDetalles();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     protected void cargarDetalles() {
@@ -238,40 +225,5 @@ public class DetallesPelicula extends AppCompatActivity implements VideoAdapter.
 
         /* Return true so that the menu is displayed in the Toolbar */
         return true;
-    }
-
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("DetallesPelicula Page")
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
     }
 }

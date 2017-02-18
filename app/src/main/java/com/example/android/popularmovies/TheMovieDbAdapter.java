@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.android.popularmovies.data.Movie;
+import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.data.Responses;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -20,6 +22,7 @@ import com.squareup.picasso.Picasso;
 public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.TheMovieDbAdapteriewHolder> {
 
     private Responses<Movie> mMovies;
+    private Cursor mCursor;
 
     /*
      * An on-click handler that we've defined to make it easy for an Activity to interface with
@@ -58,8 +61,7 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            Movie movie = mMovies.getResults().get(adapterPosition);
-            mClickHandler.onClick(movie);
+            mClickHandler.onClick(getMovie(adapterPosition));
         }
     }
 
@@ -78,26 +80,74 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
 
     @Override
     public void onBindViewHolder(TheMovieDbAdapteriewHolder theMovieDbAdapteriewHolder, int position) {
-        Movie movie = mMovies.getResults().get(position);
-
         Picasso.with(theMovieDbAdapteriewHolder.mContext)
-                .load(NetworkUtils.getRutaImagen(movie.getPoster()))
+                .load(NetworkUtils.getRutaImagen(this.getMovie(position).getPoster()))
                 .placeholder(R.mipmap.im_loading)
                 .error(R.mipmap.ic_not_found)
                 .into(theMovieDbAdapteriewHolder.mCartelPelicula);
     }
 
+    protected Movie getMovie(int position) {
+        Movie movie;
+        if (this.mMovies != null) {
+            movie = mMovies.getResults().get(position);
+        } else if (this.mCursor != null) {
+            movie = new Movie();
+            int idIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_ID);
+            int idTitulo = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITULO);
+            int idPoster = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER);
+            int idFechaEstreno = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_FECHA_ESTRENO);
+            int idMediaVotos = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MEDIA_VOTOS);
+            int idSinopsis = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_SINOPSIS);
+
+            mCursor.moveToPosition(position); // get to the right location in the cursor
+
+            // Determine the values of the wanted data
+            movie.setId(mCursor.getInt(idIndex));
+            movie.setTitulo(mCursor.getString(idTitulo));
+            movie.setPoster(mCursor.getString(idPoster));
+            movie.setFechaEstreno(mCursor.getString(idFechaEstreno));
+            movie.setMediaVotos(mCursor.getDouble(idMediaVotos));
+            movie.setSinopsis(mCursor.getString(idSinopsis));
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        return movie;
+    }
+
 
     @Override
     public int getItemCount() {
-        if (null == this.mMovies) return 0;
-        return this.mMovies.getResults().size();
+        if (null == this.mMovies) {
+            if (null == this.mCursor) {
+                return 0;
+            } else {
+                return mCursor.getCount();
+            }
+        } else {
+            return this.mMovies.getResults().size();
+        }
     }
 
 
     public void setDatosPeliculas(Responses<Movie> movies) {
-        this.mMovies = movies;
-        notifyDataSetChanged();
+        if (this.mMovies != movies) {
+            this.mCursor = null;
+            this.mMovies = movies;
+            if (this.mMovies != null) {
+                notifyDataSetChanged();
+            }
+        }
+    }
+
+    public void swapSource(Cursor cursor) {
+        if (mCursor != cursor) {
+            this.mMovies = null;
+            this.mCursor = cursor;
+            if (this.mCursor != null) {
+                this.notifyDataSetChanged();
+            }
+        }
     }
 
 }
