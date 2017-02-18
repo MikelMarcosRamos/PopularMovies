@@ -32,9 +32,9 @@ import retrofit2.Response;
 /**
  * Activity to show the film details
  */
-public class DetallesPelicula extends AppCompatActivity implements VideoAdapter.VideoAdapterOnClickHandler, ReviewAdapter.ReviewAdapterOnClickHandler {
+public class DetallesPeliculaActivity extends AppCompatActivity implements VideoAdapter.VideoAdapterOnClickHandler, ReviewAdapter.ReviewAdapterOnClickHandler {
 
-    private final String TAG = DetallesPelicula.class.getSimpleName();
+    private final String TAG = DetallesPeliculaActivity.class.getSimpleName();
 
     private ActivityDetallesPeliculaBinding mBinding;
 
@@ -49,17 +49,17 @@ public class DetallesPelicula extends AppCompatActivity implements VideoAdapter.
 
         this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detalles_pelicula);
 
-        this.mBinding.rvVideos.setLayoutManager(new LinearLayoutManager(this));
-        this.mBinding.rvVideos.setEmptyView(this.findViewById(R.id.lbl_rv_videos_empty));
-        this.mBinding.rvVideos.setHasFixedSize(true);
+        this.mBinding.datosVideos.rvVideos.setLayoutManager(new LinearLayoutManager(this));
+        this.mBinding.datosVideos.rvVideos.setEmptyView(this.findViewById(R.id.lbl_rv_videos_empty));
+        this.mBinding.datosVideos.rvVideos.setHasFixedSize(true);
         this.mVideoAdapter = new VideoAdapter(this);
-        this.mBinding.rvVideos.setAdapter(this.mVideoAdapter);
+        this.mBinding.datosVideos.rvVideos.setAdapter(this.mVideoAdapter);
 
-        this.mBinding.rvCriticas.setLayoutManager(new LinearLayoutManager(this));
-        this.mBinding.rvCriticas.setEmptyView(this.findViewById(R.id.lbl_rv_criticas_empty));
-        this.mBinding.rvCriticas.setHasFixedSize(true);
+        this.mBinding.datosCriticas.rvCriticas.setLayoutManager(new LinearLayoutManager(this));
+        this.mBinding.datosCriticas.rvCriticas.setEmptyView(this.findViewById(R.id.lbl_rv_criticas_empty));
+        this.mBinding.datosCriticas.rvCriticas.setHasFixedSize(true);
         this.mReviewAdapter = new ReviewAdapter(this);
-        this.mBinding.rvCriticas.setAdapter(this.mReviewAdapter);
+        this.mBinding.datosCriticas.rvCriticas.setAdapter(this.mReviewAdapter);
 
 
         this.cargarDetalles();

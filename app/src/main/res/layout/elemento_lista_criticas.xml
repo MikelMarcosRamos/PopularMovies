@@ -11,6 +11,7 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:drawableLeft="@drawable/ic_review"
+        android:drawablePadding="8dp"
         android:padding="5dp"/>
 
     <View
