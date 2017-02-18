@@ -1,21 +1,22 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.Responses;
 import com.example.android.popularmovies.data.Review;
+import com.example.android.popularmovies.utilities.RecyclerViewEmptySupport;
 
 /**
  * Adaptador que gestiona las llamadas a www.themoviedb.org
  * {@link ReviewAdapter} pasa una lista de películas a
- * {@link RecyclerView}
+ * {@link RecyclerViewEmptySupport}
  */
-public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdapterViewHolder> {
+public class ReviewAdapter extends RecyclerViewEmptySupport.Adapter<ReviewAdapter.ReviewAdapterViewHolder> {
 
     private Responses<Review> mReviews;
 
@@ -42,7 +43,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
         mClickHandler = clickHandler;
     }
 
-    public class ReviewAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ReviewAdapterViewHolder extends RecyclerViewEmptySupport.ViewHolder implements View.OnClickListener {
         public final TextView mAuthor;
 
         public ReviewAdapterViewHolder(View view) {

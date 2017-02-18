@@ -4,13 +4,6 @@ package com.example.android.popularmovies.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.android.popularmovies.VideoAdapter;
-import com.example.android.popularmovies.utilities.ClienteRest;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 /**
  * Created by android on 27/01/17.
  * Class to save films information

@@ -12,4 +12,7 @@
     <string name="no_favorita">No Favorita</string>
     <string name="favorita">Favorita</string>
     <string name="mis_favoritas">Mis Favoritas</string>
+    <string name="no_hay_videos">No hay videos</string>
+    <string name="no_hay_criticas">No hay críticas</string>
+    <string name="no_hay_peliculas">No hay películas</string>
 </resources>

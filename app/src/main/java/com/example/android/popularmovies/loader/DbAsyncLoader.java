@@ -1,14 +1,17 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.loader;
 
 
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.content.AsyncTaskLoader;
+import android.util.Log;
 
-import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.data.db.MovieContract;
 
 
 public class DbAsyncLoader extends AsyncTaskLoader<Cursor> {
+
+    private static final String TAG = DbAsyncLoader.class.getSimpleName();
 
     // Initialize a Cursor, this will hold all the task data
     Cursor mMovieData = null;
@@ -46,7 +49,7 @@ public class DbAsyncLoader extends AsyncTaskLoader<Cursor> {
                     null);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
             return null;
         }
     }

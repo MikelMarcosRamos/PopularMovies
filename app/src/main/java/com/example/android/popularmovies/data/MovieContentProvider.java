@@ -26,6 +26,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.example.android.popularmovies.data.db.MovieContract;
+import com.example.android.popularmovies.data.db.MovieDbHelper;
+
 
 public class MovieContentProvider extends ContentProvider {
 

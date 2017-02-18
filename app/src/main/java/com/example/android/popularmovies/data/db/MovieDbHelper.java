@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.popularmovies.data;
+package com.example.android.popularmovies.data.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.example.android.popularmovies.data.db.MovieContract;
 
 /**
  * Manages a local database for movies data.

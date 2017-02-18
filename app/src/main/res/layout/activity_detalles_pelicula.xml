@@ -38,26 +38,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:text="@string/lbl_videos"
-                android:visibility="invisible"/>
+                android:text="@string/lbl_videos"/>
 
-            <android.support.v7.widget.RecyclerView
+            <com.example.android.popularmovies.utilities.RecyclerViewEmptySupport
                 android:id="@+id/rv_videos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/lbl_rv_videos_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_hay_videos"/>
 
             <TextView
                 android:id="@+id/lbl_criticas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:text="@string/lbl_criticas"
-                android:visibility="invisible"/>
+                android:text="@string/lbl_criticas"/>
 
-            <android.support.v7.widget.RecyclerView
+            <com.example.android.popularmovies.utilities.RecyclerViewEmptySupport
                 android:id="@+id/rv_criticas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/lbl_rv_criticas_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_hay_criticas"/>
 
         </LinearLayout>
     </ScrollView>

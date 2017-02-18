@@ -15,45 +15,15 @@
  */
 package com.example.android.popularmovies.utilities;
 
-import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
-
-import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.data.TheMovieDbPreferencias;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-
 /**
  * These utilities will be used to communicate with the movie db server.
  */
 public final class NetworkUtils {
 
-    private static final String TAG = NetworkUtils.class.getSimpleName();
-
-    private static final String BASE_URL_BUSCAR =
-            "https://api.themoviedb.org/3/movie/";
-
     private static final String BASE_URL_IMAGEN =
             "https://image.tmdb.org/t/p/w500/";
 
-
-    private static Map<Integer, String> BUSQUEDAS = new HashMap<Integer, String>() {{
-        put(R.id.accion_popular, "popular");
-        put(R.id.accion_puntuacion, "top_rated");
-    }} ;
-
-    private final static String PARAMETRO_API = "api_key";
-    private final static String PARAMETRO_IDIOMA = "language";
-    private final static String PARAMETRO_PAGINA = "page";
-    private final static String PARAMETRO_REGION = "region";
+    private NetworkUtils(){}
 
     /**
      * Build the url of the image for the movie db server.

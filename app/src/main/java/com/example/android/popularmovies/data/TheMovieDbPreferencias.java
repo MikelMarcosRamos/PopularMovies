@@ -22,7 +22,7 @@ import com.example.android.popularmovies.R;
  */
 public class TheMovieDbPreferencias {
 
-    public final static String VALOR_IDIOMA = "en-EN";
+    public final static String VALOR_IDIOMA = "es-ES";
     public final static Integer VALOR_PAGINA = 1;
     public final static String VALOR_REGION = "Spain";
 

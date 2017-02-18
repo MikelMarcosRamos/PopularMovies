@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.popularmovies.data;
+package com.example.android.popularmovies.data.db;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -44,7 +44,7 @@ public class MovieContract {
                 .appendPath(PATH_MOVIE)
                 .build();
 
-        protected static final String TABLE_NAME = "movie";
+        public static final String TABLE_NAME = "movie";
 
         public static final String COLUMN_ID = "id";
         public static final String COLUMN_TITULO = "titulo";

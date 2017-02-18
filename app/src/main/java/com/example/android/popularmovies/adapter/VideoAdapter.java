@@ -1,21 +1,22 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.Responses;
 import com.example.android.popularmovies.data.Video;
+import com.example.android.popularmovies.utilities.RecyclerViewEmptySupport;
 
 /**
  * Adaptador que gestiona las llamadas a www.themoviedb.org
  * {@link VideoAdapter} pasa una lista de películas a
- * {@link RecyclerView}
+ * {@link RecyclerViewEmptySupport}
  */
-public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapteriewHolder> {
+public class VideoAdapter extends RecyclerViewEmptySupport.Adapter<VideoAdapter.VideoAdapteriewHolder> {
 
     private Responses<Video> mVideos;
 
@@ -42,7 +43,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
         mClickHandler = clickHandler;
     }
 
-    public class VideoAdapteriewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class VideoAdapteriewHolder extends RecyclerViewEmptySupport.ViewHolder implements View.OnClickListener {
 
         protected TextView mVideoNombre;
 

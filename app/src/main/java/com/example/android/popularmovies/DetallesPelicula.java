@@ -8,15 +8,15 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
+import com.example.android.popularmovies.adapter.ReviewAdapter;
+import com.example.android.popularmovies.adapter.VideoAdapter;
 import com.example.android.popularmovies.data.Movie;
-import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.data.db.MovieContract;
 import com.example.android.popularmovies.data.Responses;
 import com.example.android.popularmovies.data.Review;
 import com.example.android.popularmovies.data.Video;
@@ -39,12 +39,7 @@ public class DetallesPelicula extends AppCompatActivity implements VideoAdapter.
     private ActivityDetallesPeliculaBinding mBinding;
 
     private Movie mMovie;
-
-
-    private RecyclerView mRvVideos;
     private VideoAdapter mVideoAdapter;
-
-    private RecyclerView mRvCriticas;
     private ReviewAdapter mReviewAdapter;
 
     @Override
@@ -54,17 +49,17 @@ public class DetallesPelicula extends AppCompatActivity implements VideoAdapter.
 
         this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detalles_pelicula);
 
-        this.mRvVideos = (RecyclerView) this.findViewById(R.id.rv_videos);
-        this.mRvVideos.setLayoutManager(new LinearLayoutManager(this));
-        this.mRvVideos.setHasFixedSize(true);
+        this.mBinding.rvVideos.setLayoutManager(new LinearLayoutManager(this));
+        this.mBinding.rvVideos.setEmptyView(this.findViewById(R.id.lbl_rv_videos_empty));
+        this.mBinding.rvVideos.setHasFixedSize(true);
         this.mVideoAdapter = new VideoAdapter(this);
-        this.mRvVideos.setAdapter(this.mVideoAdapter);
+        this.mBinding.rvVideos.setAdapter(this.mVideoAdapter);
 
-        this.mRvCriticas = (RecyclerView) this.findViewById(R.id.rv_criticas);
-        this.mRvCriticas.setLayoutManager(new LinearLayoutManager(this));
-        this.mRvCriticas.setHasFixedSize(true);
+        this.mBinding.rvCriticas.setLayoutManager(new LinearLayoutManager(this));
+        this.mBinding.rvCriticas.setEmptyView(this.findViewById(R.id.lbl_rv_criticas_empty));
+        this.mBinding.rvCriticas.setHasFixedSize(true);
         this.mReviewAdapter = new ReviewAdapter(this);
-        this.mRvCriticas.setAdapter(this.mReviewAdapter);
+        this.mBinding.rvCriticas.setAdapter(this.mReviewAdapter);
 
 
         this.cargarDetalles();
@@ -91,18 +86,12 @@ public class DetallesPelicula extends AppCompatActivity implements VideoAdapter.
                 public void onResponse(Call<Responses<Video>> call, Response<Responses<Video>> response) {
                     if (response.isSuccessful()) {
                         mVideoAdapter.setVideos(response.body());
-                        if (mVideoAdapter.getItemCount() > 0) {
-                            mBinding.lblVideos.setVisibility(View.VISIBLE);
-                        }
-                    } else {
-                        mBinding.lblVideos.setVisibility(View.INVISIBLE);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Responses<Video>> call, Throwable t) {
-                    mBinding.lblVideos.setVisibility(View.INVISIBLE);
-                    t.printStackTrace();
+                    Log.e(TAG, t.getMessage(), t);
                 }
             });
 
@@ -112,19 +101,13 @@ public class DetallesPelicula extends AppCompatActivity implements VideoAdapter.
                 public void onResponse(Call<Responses<Review>> call, Response<Responses<Review>> response) {
                     if (response.isSuccessful()) {
                         mReviewAdapter.setCriticas(response.body());
-                        if (mReviewAdapter.getItemCount() > 0) {
-                            mBinding.lblCriticas.setVisibility(View.VISIBLE);
-                        }
 
-                    } else {
-                        mBinding.lblCriticas.setVisibility(View.INVISIBLE);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Responses<Review>> call, Throwable t) {
-                    mBinding.lblCriticas.setVisibility(View.INVISIBLE);
-                    t.printStackTrace();
+                    Log.e(TAG, t.getMessage(), t);
                 }
             });
         }
@@ -221,6 +204,10 @@ public class DetallesPelicula extends AppCompatActivity implements VideoAdapter.
         } else {
             menu.findItem(R.id.m_favorita).setVisible(false);
             menu.findItem(R.id.m_no_favorita).setVisible(true);
+        }
+
+        if (cursor != null) {
+            cursor.close();
         }
 
         /* Return true so that the menu is displayed in the Toolbar */

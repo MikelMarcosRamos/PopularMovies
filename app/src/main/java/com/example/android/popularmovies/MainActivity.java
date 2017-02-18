@@ -3,23 +3,25 @@ package com.example.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
+import com.example.android.popularmovies.adapter.TheMovieDbAdapter;
 import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.data.Responses;
 import com.example.android.popularmovies.data.TheMovieDbPreferencias;
+import com.example.android.popularmovies.databinding.ActivityMainBinding;
+import com.example.android.popularmovies.loader.DbAsyncLoader;
 import com.example.android.popularmovies.utilities.ClienteRest;
 
 import retrofit2.Call;
@@ -31,13 +33,11 @@ public class MainActivity extends AppCompatActivity implements
         , Callback<Responses<Movie>>
         ,LoaderManager.LoaderCallbacks<Cursor>{
 
-    private RecyclerView mRvPeliculas;
+    private final String TAG = MainActivity.class.getSimpleName();
 
     private TheMovieDbAdapter mTheMovieDbAdapter;
 
-    private TextView mMostrarError;
-
-    private ProgressBar mCargando;
+    private ActivityMainBinding mBinding;
 
     private int mTipoLista;
 
@@ -50,17 +50,16 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.mRvPeliculas = (RecyclerView) this.findViewById(R.id.rv_peliculas);
-        this.mMostrarError = (TextView) this.findViewById(R.id.tv_mostrar_error);
-        this.mCargando = (ProgressBar) this.findViewById(R.id.pb_cargando);
+        this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         Context context = this;
 
         int numColumnas = calcularColumnasListado(context);
-        this.mRvPeliculas.setLayoutManager(new GridLayoutManager(context, numColumnas));
-        this.mRvPeliculas.setHasFixedSize(true);
+        this.mBinding.rvPeliculas.setLayoutManager(new GridLayoutManager(context, numColumnas));
+        this.mBinding.rvPeliculas.setEmptyView(this.findViewById(R.id.lbl_rv_peliculas_empty));
+        this.mBinding.rvPeliculas.setHasFixedSize(true);
         this.mTheMovieDbAdapter = new TheMovieDbAdapter(this);
-        this.mRvPeliculas.setAdapter(this.mTheMovieDbAdapter);
+        this.mBinding.rvPeliculas.setAdapter(this.mTheMovieDbAdapter);
 
         if (savedInstanceState != null) {
             this.mTipoLista = savedInstanceState.getInt(TIPO_LISTA);
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements
         if (this.mTipoLista < 1) {
             this.mTipoLista = TheMovieDbPreferencias.getListaPorDefecto();
         }
-
+        this.mBinding.pbCargando.setVisibility(View.VISIBLE);
         mostrarDatosPeliculas();
 
         if (this.mTipoLista == R.id.accion_favoritas) {
@@ -104,16 +103,16 @@ public class MainActivity extends AppCompatActivity implements
 
     private void mostrarDatosPeliculas() {
         /* First, make sure the error is invisible */
-        this.mMostrarError.setVisibility(View.INVISIBLE);
+        this.mBinding.tvMostrarError.setVisibility(View.GONE);
         /* Then, make sure the weather data is visible */
-        this.mRvPeliculas.setVisibility(View.VISIBLE);
+        this.mBinding.rvPeliculas.setVisibility(View.VISIBLE);
     }
 
     private void mostrarMensajeError() {
         /* First, hide the currently visible data */
-        this.mRvPeliculas.setVisibility(View.INVISIBLE);
+        this.mBinding.rvPeliculas.setVisibility(View.GONE);
         /* Then, show the error */
-        this.mMostrarError.setVisibility(View.VISIBLE);
+        this.mBinding.tvMostrarError.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -144,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onResponse(Call<Responses<Movie>> call, Response<Responses<Movie>> response) {
         if(response.isSuccessful()) {
-            mCargando.setVisibility(View.INVISIBLE);
+            this.mBinding.pbCargando.setVisibility(View.GONE);
             mostrarDatosPeliculas();
             mTheMovieDbAdapter.setDatosPeliculas(response.body());
         } else {
@@ -155,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onFailure(Call<Responses<Movie>> call, Throwable t) {
         mostrarMensajeError();
+        Log.e(TAG, t.getMessage(), t);
     }
 
     @Override

@@ -1,25 +1,26 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.Movie;
-import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.data.db.MovieContract;
 import com.example.android.popularmovies.data.Responses;
 import com.example.android.popularmovies.utilities.NetworkUtils;
+import com.example.android.popularmovies.utilities.RecyclerViewEmptySupport;
 import com.squareup.picasso.Picasso;
 
 /**
  * Adaptador que gestiona las llamadas a www.themoviedb.org
  * {@link TheMovieDbAdapter} pasa una lista de películas a
- * {@link android.support.v7.widget.RecyclerView}
+ * {@link RecyclerViewEmptySupport}
  */
-public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.TheMovieDbAdapteriewHolder> {
+public class TheMovieDbAdapter extends RecyclerViewEmptySupport.Adapter<TheMovieDbAdapter.TheMovieDbAdapteriewHolder> {
 
     private Responses<Movie> mMovies;
     private Cursor mCursor;
@@ -47,7 +48,7 @@ public class TheMovieDbAdapter extends RecyclerView.Adapter<TheMovieDbAdapter.Th
         mClickHandler = clickHandler;
     }
 
-    public class TheMovieDbAdapteriewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class TheMovieDbAdapteriewHolder extends RecyclerViewEmptySupport.ViewHolder implements View.OnClickListener {
         public final ImageView mCartelPelicula;
         public Context mContext;
 
