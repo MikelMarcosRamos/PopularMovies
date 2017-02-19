@@ -7,40 +7,27 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.example.android.popularmovies.adapter.ReviewAdapter;
-import com.example.android.popularmovies.adapter.VideoAdapter;
+
 import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.data.db.MovieContract;
-import com.example.android.popularmovies.data.Responses;
-import com.example.android.popularmovies.data.Review;
-import com.example.android.popularmovies.data.Video;
 import com.example.android.popularmovies.databinding.ActivityDetallesPeliculaBinding;
-import com.example.android.popularmovies.utilities.ClienteRest;
-import com.example.android.popularmovies.utilities.NetworkUtils;
-import com.squareup.picasso.Picasso;
+import com.example.android.popularmovies.fragment.DetallesPeliculaFragment;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Activity to show the film details
  */
-public class DetallesPeliculaActivity extends AppCompatActivity implements VideoAdapter.VideoAdapterOnClickHandler, ReviewAdapter.ReviewAdapterOnClickHandler {
+public class DetallesPeliculaActivity extends AppCompatActivity {
 
     private final String TAG = DetallesPeliculaActivity.class.getSimpleName();
 
     private ActivityDetallesPeliculaBinding mBinding;
 
     private Movie mMovie;
-    private VideoAdapter mVideoAdapter;
-    private ReviewAdapter mReviewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,19 +35,6 @@ public class DetallesPeliculaActivity extends AppCompatActivity implements Video
         setContentView(R.layout.activity_detalles_pelicula);
 
         this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detalles_pelicula);
-
-        this.mBinding.datosVideos.rvVideos.setLayoutManager(new LinearLayoutManager(this));
-        this.mBinding.datosVideos.rvVideos.setEmptyView(this.findViewById(R.id.lbl_rv_videos_empty));
-        this.mBinding.datosVideos.rvVideos.setHasFixedSize(true);
-        this.mVideoAdapter = new VideoAdapter(this);
-        this.mBinding.datosVideos.rvVideos.setAdapter(this.mVideoAdapter);
-
-        this.mBinding.datosCriticas.rvCriticas.setLayoutManager(new LinearLayoutManager(this));
-        this.mBinding.datosCriticas.rvCriticas.setEmptyView(this.findViewById(R.id.lbl_rv_criticas_empty));
-        this.mBinding.datosCriticas.rvCriticas.setHasFixedSize(true);
-        this.mReviewAdapter = new ReviewAdapter(this);
-        this.mBinding.datosCriticas.rvCriticas.setAdapter(this.mReviewAdapter);
-
 
         this.cargarDetalles();
     }
@@ -70,46 +44,13 @@ public class DetallesPeliculaActivity extends AppCompatActivity implements Video
         if (intent.hasExtra("movie") && mBinding != null) {
             this.mMovie = intent.getParcelableExtra("movie");
 
-            this.mBinding.peliculaTitulo.setText(this.mMovie.getTitulo());
-            Picasso.with(this)
-                    .load(NetworkUtils.getRutaImagen(this.mMovie.getPoster()))
-                    .placeholder(R.mipmap.im_loading)
-                    .error(R.mipmap.ic_not_found)
-                    .into(this.mBinding.peliculaPoster);
-            this.mBinding.datosPelicula.peliculaFechaEstreno.setText(this.mMovie.getFechaEstreno());
-            this.mBinding.datosPelicula.peliculaMediaVotos.setText(Double.toString(this.mMovie.getMediaVotos()));
-            this.mBinding.datosPelicula.peliculaSinopsis.setText(this.mMovie.getSinopsis());
-
-            Call<Responses<Video>> videosCall = new ClienteRest(this).obtenerVideos(this.mMovie.getId());
-            videosCall.enqueue(new Callback<Responses<Video>>() {
-                @Override
-                public void onResponse(Call<Responses<Video>> call, Response<Responses<Video>> response) {
-                    if (response.isSuccessful()) {
-                        mVideoAdapter.setVideos(response.body());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Responses<Video>> call, Throwable t) {
-                    Log.e(TAG, t.getMessage(), t);
-                }
-            });
-
-            Call<Responses<Review>> reviewsCall = new ClienteRest(this).obtenerCriticas(this.mMovie.getId());
-            reviewsCall.enqueue(new Callback<Responses<Review>>() {
-                @Override
-                public void onResponse(Call<Responses<Review>> call, Response<Responses<Review>> response) {
-                    if (response.isSuccessful()) {
-                        mReviewAdapter.setCriticas(response.body());
-
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Responses<Review>> call, Throwable t) {
-                    Log.e(TAG, t.getMessage(), t);
-                }
-            });
+            Bundle arguments = new Bundle();
+            arguments.putParcelable("movie", this.mMovie);
+            DetallesPeliculaFragment fragment = new DetallesPeliculaFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.datos_pelicula_container, fragment)
+                    .commit();
         }
     }
 
@@ -151,34 +92,7 @@ public class DetallesPeliculaActivity extends AppCompatActivity implements Video
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onClick(Review review) {
 
-        Uri uri = Uri.parse(review.getUrl());
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(uri);
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Couldn't call " + uri.toString() + ", no receiving apps installed!");
-        }
-    }
-
-    @Override
-    public void onClick(Video video) {
-        Uri uri = Uri.parse("https://www.youtube.com/watch?v=" + video.getKey());
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(uri);
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Couldn't call " + uri.toString() + ", no receiving apps installed!");
-        }
-    }
 
 
     @Override

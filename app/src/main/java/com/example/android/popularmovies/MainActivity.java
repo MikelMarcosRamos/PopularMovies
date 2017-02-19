@@ -21,6 +21,7 @@ import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.data.Responses;
 import com.example.android.popularmovies.data.TheMovieDbPreferencias;
 import com.example.android.popularmovies.databinding.ActivityMainBinding;
+import com.example.android.popularmovies.fragment.DetallesPeliculaFragment;
 import com.example.android.popularmovies.loader.DbAsyncLoader;
 import com.example.android.popularmovies.utilities.ClienteRest;
 
@@ -37,13 +38,15 @@ public class MainActivity extends AppCompatActivity implements
 
     private TheMovieDbAdapter mTheMovieDbAdapter;
 
-    private ActivityMainBinding mBinding;
+    public ActivityMainBinding mBinding;
 
     private int mTipoLista;
 
     private static final String TIPO_LISTA = "TIPO_LISTA";
 
-    private static final int MOVIE_LOADER_ID = 0;
+    public static final int MOVIE_LOADER_ID = 0;
+
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        this.mTwoPane = this.mBinding.datosPeliculaContainer != null;
 
         Context context = this;
 
@@ -64,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState != null) {
             this.mTipoLista = savedInstanceState.getInt(TIPO_LISTA);
         }
+
+
 
         getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
         cargarDatosPeliculas();
@@ -87,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements
 
 
     private int calcularColumnasListado(Context context) {
+        if (this.mTwoPane) {
+            return 1;
+        }
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         return (int) (dpWidth / 180);
@@ -94,11 +103,22 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(Movie movie) {
-        Context context = this;
-        Class destinationClass = DetallesPeliculaActivity.class;
-        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        intentToStartDetailActivity.putExtra("movie", movie);
-        startActivity(intentToStartDetailActivity);
+        if (this.mTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putParcelable("movie", movie);
+            arguments.putBoolean("dual",true);
+            DetallesPeliculaFragment fragment = new DetallesPeliculaFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.datos_pelicula_container, fragment)
+                    .commit();
+        } else {
+            Context context = this;
+            Class destinationClass = DetallesPeliculaActivity.class;
+            Intent intentToStartDetailActivity = new Intent(context, destinationClass);
+            intentToStartDetailActivity.putExtra("movie", movie);
+            startActivity(intentToStartDetailActivity);
+        }
     }
 
     private void mostrarDatosPeliculas() {
@@ -179,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        this.mBinding.pbCargando.setVisibility(View.GONE);
         mTheMovieDbAdapter.swapSource(data);
     }
 
